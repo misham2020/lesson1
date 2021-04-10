@@ -53,10 +53,6 @@ class MonitoringProfilesTable extends Entity\DataManager
                 'values' => ['N', 'Y'],
                 'title' => Loc::getMessage('YLAB_CKECKUP_PROFILE_ACTIVITY_FIELD'),
             ]),
-            new Entity\StringField('PASSWORD', [
-                'validation' => [__CLASS__, 'validatePassword'],
-                'title' => Loc::getMessage('YLAB_CKECKUP_PROFILE_PASSWORD_FIELD'),
-            ]),
         ];
     }
 
@@ -71,17 +67,4 @@ class MonitoringProfilesTable extends Entity\DataManager
             new Entity\Validator\Length(null, 255),
         ];
     }
-    public static function validatePassword()
-    {
-        return [ 
-            new Entity\StringField('PASSWORD', array(
-            'required' => true,
-            'validation' => function() {
-                return array(
-                    new Entity\Validator\RegExp('/^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[^\w\s]).{6,}/')
-                );
-            }
-        ))
-       ];
-    } 
 }

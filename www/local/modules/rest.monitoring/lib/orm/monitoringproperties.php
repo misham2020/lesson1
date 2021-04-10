@@ -45,6 +45,10 @@ class MonitoringPropertiesTable extends Entity\DataManager
                 'validation' => [__CLASS__, 'validateName'],
                 'title' => Loc::getMessage('YLAB_CKECKUP_PROPERTIES_NAME_FIELD'),
             ]),
+            new Entity\StringField('VALUE', [
+                'validation' => [__CLASS__, 'validateName'],
+                'title' => Loc::getMessage('YLAB_CKECKUP_PROPERTIES_VALUE_FIELD'),
+            ]),
         ];
     }
 
