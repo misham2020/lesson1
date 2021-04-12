@@ -7,6 +7,7 @@ $APPLICATION->includeComponent(
     'main',
     [
         'PARAM' => '1',
+     
     ]
 );
 

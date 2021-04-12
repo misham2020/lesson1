@@ -13,9 +13,9 @@ use Bitrix\Main\UI\Filter\Options as FilterOptions;
 Loader::includeModule('rest.monitoring');
 
 /**
- * Class MonitoringProfileManager
+ * Class MonitoringProperties
  */
-class MonitoringProfileManager extends CBitrixComponent
+class MonitoringProperties extends MonitoringProfileManager
 {
     /**
      * @var array
@@ -31,19 +31,19 @@ class MonitoringProfileManager extends CBitrixComponent
      * Индификатор грида
      * @var string
      */
-    private $sGridID = 'monitoring_profiles_list';
+    private $sGridID = 'monitoring_properties_list';
 
     /**
      * Индификатор фильтра
      * @var string
      */
-    private $sGridFilterID = 'monitoring_profiles_list';
+    private $sGridFilterID = 'monitoring_properties_list';
 
     /**
      * Индификатор пагинации
      * @var string
      */
-    private $sGridPaginationID = 'monitoring_profiles_list';
+    private $sGridPaginationID = 'monitoring_properties_list';
 
     /**
      * Получаем индификатор грида
@@ -78,21 +78,21 @@ class MonitoringProfileManager extends CBitrixComponent
     public function executeComponent()
     {
         $this->arResult['BUTTONS'] = [
-            'ADD_PROFILE' => [
-                'LINK' => '/bitrix/admin/rest.monitoring_profiles_modify.php',
+            'ADD_PROPERTIES' => [
+                'LINK' => '/bitrix/admin/rest.monitoring_properties_modify.php',
                 'NAME' => Loc::getMessage('REST_MONITORING_PROFILE_MANAGER_ADD')
             ]
         ];
 
-        $arProfilesGridData = $this->getGridProfilesData();
+        $arPropertiesGridData = $this->getGridPropertiesData();
 
         $this->arResult['GRID'] = [
             'FILTER_ID' => $this->getGridFilterID(),
             'GRID_ID' => $this->getGridID(),
             'FILTER' => $this->getGridFilter(),
             'COLUMNS' => $this->getGridHeaders(),
-            'ROWS' => $arProfilesGridData['ROWS'],
-            'NAV_OBJECT' => $arProfilesGridData['NAV_OBJECT']
+            'ROWS' => $arPropertiesGridData['ROWS'],
+            'NAV_OBJECT' => $arPropertiesGridData['NAV_OBJECT']
         ];
 
         $this->includeComponentTemplate();
@@ -113,7 +113,7 @@ class MonitoringProfileManager extends CBitrixComponent
      * @throws \Bitrix\Main\ObjectPropertyException
      * @throws \Bitrix\Main\SystemException
      */
-    public function getGridProfilesData()
+    public function getGridPropertiesData()
     {
         $oGridOptions = new GridOptions($this->sGridID);
 
@@ -156,37 +156,16 @@ class MonitoringProfileManager extends CBitrixComponent
         if (isset($arFilterData['FILTER_NAME'])) {
             $arFilter['NAME'] = $arFilterData['FILTER_NAME'];
         }
-        if (isset($arFilterData['FILTER_URL'])) {
-            $arFilter['=URL'] = $arFilterData['FILTER_URL'];
-        }
-        if (isset($arFilterData['FILTER_METHOD'])) {
-            switch ($arFilterData['FILTER_METHOD']) {
-                case 'P':
-                    $arFilter['=METHOD'] = 'POST';
-                    break;
-                case 'G':
-                    $arFilter['=METHOD'] = 'GET';
-                    break;
-            }
-        }
-        if (isset($arFilterData['FILTER_ACTIVITY'])) {
-            switch ($arFilterData['FILTER_ACTIVITY']) {
-                case 'Y':
-                    $arFilter['=ACTIVITY'] = 'Y';
-                    break;
-                case 'N':
-                    $arFilter['=ACTIVITY'] = 'N';
-                    break;
-            }
-        }
+        
+        
 
         $arParams = [
             'select' => [
                 'ID',
                 'NAME',
-                'URL',
-                'CHECK_INTERVAL',
-                'ACTIVITY'
+                'PROFILE_ID',
+                'VALUE',
+               
             ],
             'offset' => $oNav->getOffset(),
             'order' => $arSort['sort'],
@@ -223,21 +202,17 @@ class MonitoringProfileManager extends CBitrixComponent
                     'data' => [
                         'ID' => $arProfile['ID'],
                         'NAME' => $arProfile['NAME'],
-                        'URL' => $arProfile['URL'],
-                        'CHECK_INTERVAL' => $arProfile['CHECK_INTERVAL'],
-                        'ACTIVITY' => $arProfile['ACTIVITY'] === 'N' ? Loc::getMessage('REST_MONITORING_PROFILE_HEAD_ACTIVE_NO') : Loc::getMessage('REST_MONITORING_PROFILE_HEAD_ACTIVE_YES'),
+                        'PROFILE_ID' => $arProfile['PROFILE_ID'],
+                        'VALUE' => $arProfile['VALUE'],
+    
                     ],
                     'actions' => [
                         [
-                            'text' => Loc::getMessage('REST_MONITORING_PROFILE_EDIT'),
+                            'text' => Loc::getMessage('REST_MONITORING_PROPERTIES_EDIT'),
                             'onclick' => 'document.location.href="rest.monitoring_profiles_modify.php?type=edit&pid=' . $arProfile['ID'] . '"'
                         ],
                         [
-                            'text' => Loc::getMessage('REST_MONITORING_PROFILE_VIEW'),
-                            'onclick' => 'document.location.href="rest.monitoring_profiles_modify.php?type=view&pid=' . $arProfile['ID'] . '"'
-                        ], 
-                        [
-                            'text' => Loc::getMessage('REST_MONITORING_PROFILE_DELETE'),
+                            'text' => Loc::getMessage('REST_MONITORING_PROPERTIES_DELETE'),
                             'onclick' => 'document.location.href="rest.monitoring_profiles_modify.php?type=delete&pid=' . $arProfile['ID'] . '"'
                         ]
                     ]
@@ -259,34 +234,29 @@ class MonitoringProfileManager extends CBitrixComponent
         $arHeaders = [
             [
                 'id' => 'ID',
-                'name' => Loc::getMessage('REST_MONITORING_PROFILE_HEAD_ID'),
+                'name' => Loc::getMessage('REST_MONITORING_PROPERTIES_HEAD_ID'),
                 'sort' => false,
                 'default' => true
             ],
             [
                 'id' => 'NAME',
-                'name' => Loc::getMessage('REST_MONITORING_PROFILE_HEAD_NAME'),
+                'name' => Loc::getMessage('REST_MONITORING_PROPERTIES_HEAD_NAME'),
                 'sort' => false,
                 'default' => true
             ],
             [
-                'id' => 'URL',
-                'name' => Loc::getMessage('REST_MONITORING_PROFILE_HEAD_URL'),
+                'id' => 'PROFILE_ID',
+                'name' => Loc::getMessage('REST_MONITORING_PROPERTIES_HEAD_URL'),
                 'sort' => false,
                 'default' => true
             ],
             [
-                'id' => 'CHECK_INTERVAL',
-                'name' => Loc::getMessage('REST_MONITORING_PROFILE_HEAD_CHECK'),
+                'id' => 'VALUE',
+                'name' => Loc::getMessage('REST_MONITORING_PROPERTIES_HEAD_CHECK'),
                 'sort' => false,
                 'default' => true
             ],
-            [
-                'id' => 'ACTIVITY',
-                'name' => Loc::getMessage('REST_MONITORING_PROFILE_HEAD_ACTIVE'),
-                'sort' => false,
-                'default' => true
-            ]
+            
         ];
 
         return $arHeaders;
@@ -301,35 +271,22 @@ class MonitoringProfileManager extends CBitrixComponent
         return [
             [
                 'id' => 'FILTER_ID',
-                'name' => Loc::getMessage('REST_MONITORING_PROFILE_HEAD_ID'),
+                'name' => Loc::getMessage('REST_MONITORING_PROPERTIES_HEAD_ID'),
                 'type' => 'number'
             ],
             [
                 'id' => 'FILTER_NAME',
-                'name' => Loc::getMessage('REST_MONITORING_PROFILE_HEAD_NAME')
+                'name' => Loc::getMessage('REST_MONITORING_PROPERTIES_HEAD_NAME')
             ],
             [
-                'id' => 'FILTER_URL',
-                'name' => Loc::getMessage('REST_MONITORING_PROFILE_HEAD_URL')
+                'id' => 'FILTER_PROFILE_ID',
+                'name' => Loc::getMessage('REST_MONITORING_PROPERTIES_PROFILE_ID')
             ],
             [
-                'id' => 'FILTER_METHOD',
-                'name' => Loc::getMessage('REST_MONITORING_PROFILE_METHOD'),
-                'type' => 'list',
-                'items' => [
-                    'P' => 'POST',
-                    'G' => 'GET'
-                ]
+                'id' => 'FILTER_VALUE',
+                'name' => Loc::getMessage('REST_MONITORING_PROPERTIES_VALUE')
             ],
-            [
-                'id' => 'FILTER_ACTIVITY',
-                'name' => Loc::getMessage('REST_MONITORING_PROFILE_HEAD_ACTIVE'),
-                'type' => 'list',
-                'items' => [
-                    'Y' => Loc::getMessage('REST_MONITORING_PROFILE_HEAD_ACTIVE_YES'),
-                    'N' => Loc::getMessage('REST_MONITORING_PROFILE_HEAD_ACTIVE_NO')
-                ]
-            ]
+            
         ];
     }
     

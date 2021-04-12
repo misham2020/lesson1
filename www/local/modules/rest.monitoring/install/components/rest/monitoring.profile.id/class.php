@@ -15,12 +15,9 @@ Loader::includeModule('rest.monitoring');
 /**
  * Class MonitoringProfileManager
  */
-class MonitoringProfileManager extends CBitrixComponent
+class MonitoringProfileId extends CBitrixComponent
 {
-    /**
-     * @var array
-     */
-    private $arButtons = [];
+   
 
     /**
      * @var array
@@ -33,18 +30,8 @@ class MonitoringProfileManager extends CBitrixComponent
      */
     private $sGridID = 'monitoring_profiles_list';
 
-    /**
-     * Индификатор фильтра
-     * @var string
-     */
-    private $sGridFilterID = 'monitoring_profiles_list';
-
-    /**
-     * Индификатор пагинации
-     * @var string
-     */
-    private $sGridPaginationID = 'monitoring_profiles_list';
-
+   
+    
     /**
      * Получаем индификатор грида
      * @return string
@@ -54,14 +41,7 @@ class MonitoringProfileManager extends CBitrixComponent
         return $this->sGridID;
     }
 
-    /**
-     * Получаем индификатор фильтра
-     * @return string
-     */
-    public function getGridFilterID()
-    {
-        return $this->sGridFilterID;
-    }
+   
 
     /**
      * @param array $arParams
@@ -77,12 +57,7 @@ class MonitoringProfileManager extends CBitrixComponent
      */
     public function executeComponent()
     {
-        $this->arResult['BUTTONS'] = [
-            'ADD_PROFILE' => [
-                'LINK' => '/bitrix/admin/rest.monitoring_profiles_modify.php',
-                'NAME' => Loc::getMessage('REST_MONITORING_PROFILE_MANAGER_ADD')
-            ]
-        ];
+    
 
         $arProfilesGridData = $this->getGridProfilesData();
 
@@ -98,15 +73,7 @@ class MonitoringProfileManager extends CBitrixComponent
         $this->includeComponentTemplate();
     }
 
-    /**
-     * Получаем индификатор пагинации
-     * @return string
-     */
-    public function getGridPaginationID()
-    {
-        return $this->sGridPaginationID;
-    }
-
+    
     /**
      * Генерация данных для гридов
      * @throws \Bitrix\Main\ArgumentException
@@ -115,71 +82,7 @@ class MonitoringProfileManager extends CBitrixComponent
      */
     public function getGridProfilesData()
     {
-        $oGridOptions = new GridOptions($this->sGridID);
-
-        $arSort = $oGridOptions->GetSorting([
-            'sort' => ['ID' => 'ASC'],
-            'vars' => ['by' => 'by', 'order' => 'order']
-        ]);
-
-        $arNavParams = $oGridOptions->GetNavParams();
-
-        $oNav = new PageNavigation($this->sGridPaginationID);
-        $oNav->allowAllRecords(true)
-            ->setPageSize($arNavParams['nPageSize'])
-            ->initFromUri();
-
-        $oFilterOption = new FilterOptions($this->sGridID);
-        $arFilterData = $oFilterOption->getFilter([]);
-
-        $arFilter = [];
-        if (isset($arFilterData['FIND'])) {
-            $arFilter['NAME'] = '%' . $arFilterData['FIND'] . '%';
-        }
-        if (isset($arFilterData['FILTER_ID_numsel'])) {
-            switch ($arFilterData['FILTER_ID_numsel']) {
-                case 'exact':
-                    $arFilter['=ID'] = $arFilterData['FILTER_ID_from'];
-                    break;
-                case 'range':
-                    $arFilter['>ID'] = $arFilterData['FILTER_ID_from'];
-                    $arFilter['<ID'] = $arFilterData['FILTER_ID_to'];
-                    break;
-                case 'more':
-                    $arFilter['>ID'] = $arFilterData['FILTER_ID_from'];
-                    break;
-                case 'less':
-                    $arFilter['<ID'] = $arFilterData['FILTER_ID_to'];
-                    break;
-            }
-        }
-        if (isset($arFilterData['FILTER_NAME'])) {
-            $arFilter['NAME'] = $arFilterData['FILTER_NAME'];
-        }
-        if (isset($arFilterData['FILTER_URL'])) {
-            $arFilter['=URL'] = $arFilterData['FILTER_URL'];
-        }
-        if (isset($arFilterData['FILTER_METHOD'])) {
-            switch ($arFilterData['FILTER_METHOD']) {
-                case 'P':
-                    $arFilter['=METHOD'] = 'POST';
-                    break;
-                case 'G':
-                    $arFilter['=METHOD'] = 'GET';
-                    break;
-            }
-        }
-        if (isset($arFilterData['FILTER_ACTIVITY'])) {
-            switch ($arFilterData['FILTER_ACTIVITY']) {
-                case 'Y':
-                    $arFilter['=ACTIVITY'] = 'Y';
-                    break;
-                case 'N':
-                    $arFilter['=ACTIVITY'] = 'N';
-                    break;
-            }
-        }
-
+    
         $arParams = [
             'select' => [
                 'ID',
@@ -187,15 +90,12 @@ class MonitoringProfileManager extends CBitrixComponent
                 'URL',
                 'CHECK_INTERVAL',
                 'ACTIVITY'
-            ],
-            'offset' => $oNav->getOffset(),
-            'order' => $arSort['sort'],
-            'filter' => $arFilter
+            ]
         ];
 
         $oProfile = new Profile();
 
-        $arProfilesData = $oProfile->getListData($arParams);
+        $arProfilesData = $oProfile->getProfile($iProfileID);
 
         $oNav->setRecordCount(
             $arProfilesData->getSelectedRowsCount()
@@ -232,10 +132,7 @@ class MonitoringProfileManager extends CBitrixComponent
                             'text' => Loc::getMessage('REST_MONITORING_PROFILE_EDIT'),
                             'onclick' => 'document.location.href="rest.monitoring_profiles_modify.php?type=edit&pid=' . $arProfile['ID'] . '"'
                         ],
-                        [
-                            'text' => Loc::getMessage('REST_MONITORING_PROFILE_VIEW'),
-                            'onclick' => 'document.location.href="rest.monitoring_profiles_modify.php?type=view&pid=' . $arProfile['ID'] . '"'
-                        ], 
+                
                         [
                             'text' => Loc::getMessage('REST_MONITORING_PROFILE_DELETE'),
                             'onclick' => 'document.location.href="rest.monitoring_profiles_modify.php?type=delete&pid=' . $arProfile['ID'] . '"'
@@ -292,46 +189,7 @@ class MonitoringProfileManager extends CBitrixComponent
         return $arHeaders;
     }
 
-    /**
-     * Поля для фильтрации
-     * @return array
-     */
-    public function getGridFilter()
-    {
-        return [
-            [
-                'id' => 'FILTER_ID',
-                'name' => Loc::getMessage('REST_MONITORING_PROFILE_HEAD_ID'),
-                'type' => 'number'
-            ],
-            [
-                'id' => 'FILTER_NAME',
-                'name' => Loc::getMessage('REST_MONITORING_PROFILE_HEAD_NAME')
-            ],
-            [
-                'id' => 'FILTER_URL',
-                'name' => Loc::getMessage('REST_MONITORING_PROFILE_HEAD_URL')
-            ],
-            [
-                'id' => 'FILTER_METHOD',
-                'name' => Loc::getMessage('REST_MONITORING_PROFILE_METHOD'),
-                'type' => 'list',
-                'items' => [
-                    'P' => 'POST',
-                    'G' => 'GET'
-                ]
-            ],
-            [
-                'id' => 'FILTER_ACTIVITY',
-                'name' => Loc::getMessage('REST_MONITORING_PROFILE_HEAD_ACTIVE'),
-                'type' => 'list',
-                'items' => [
-                    'Y' => Loc::getMessage('REST_MONITORING_PROFILE_HEAD_ACTIVE_YES'),
-                    'N' => Loc::getMessage('REST_MONITORING_PROFILE_HEAD_ACTIVE_NO')
-                ]
-            ]
-        ];
-    }
+  
     
     /**
      * @return bool
