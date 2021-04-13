@@ -230,15 +230,15 @@ class MonitoringProfileManager extends CBitrixComponent
                     'actions' => [
                         [
                             'text' => Loc::getMessage('REST_MONITORING_PROFILE_EDIT'),
-                            'onclick' => 'document.location.href="rest.monitoring_profiles_modify.php?type=edit&pid=' . $arProfile['ID'] . '"'
+                            'onclick' => 'document.location.href="action/edit?type=edit&pid=' . $arProfile['ID'] . '"'
                         ],
                         [
                             'text' => Loc::getMessage('REST_MONITORING_PROFILE_VIEW'),
-                            'onclick' => 'document.location.href="rest.monitoring_profiles_modify.php?type=view&pid=' . $arProfile['ID'] . '"'
+                            'onclick' => 'document.location.href="actoin/view?type=view&pid=' . $arProfile['ID'] . '"'
                         ], 
                         [
                             'text' => Loc::getMessage('REST_MONITORING_PROFILE_DELETE'),
-                            'onclick' => 'document.location.href="rest.monitoring_profiles_modify.php?type=delete&pid=' . $arProfile['ID'] . '"'
+                            'onclick' => 'document.location.href="action/delete?type=delete&pid=' . $arProfile['ID'] . '"'
                         ]
                     ]
                 ];

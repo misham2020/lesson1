@@ -2,13 +2,7 @@
 //type=delete&pid=' . $arProfile['ID'] .
 if (!defined('B_PROLOG_INCLUDED') || B_PROLOG_INCLUDED !== true) {
     die();
-}
-
-
-
-
-
-  
+} 
  
 use Rest\Monitoring\Profile;
 use Bitrix\Main\Loader;

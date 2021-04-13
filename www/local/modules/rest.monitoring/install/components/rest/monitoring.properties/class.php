@@ -5,6 +5,7 @@ if (!defined('B_PROLOG_INCLUDED') || B_PROLOG_INCLUDED !== true) {
 
 use Bitrix\Main\Loader;
 use Rest\Monitoring\Profile;
+use Rest\Monitoring\Properties;
 use Bitrix\Main\Localization\Loc;
 use Bitrix\Main\UI\PageNavigation;
 use Bitrix\Main\Grid\Options as GridOptions;
@@ -172,7 +173,7 @@ class MonitoringProperties extends MonitoringProfileManager
             'filter' => $arFilter
         ];
 
-        $oProfile = new Profile();
+        $oProfile = new Properties();
 
         $arProfilesData = $oProfile->getListData($arParams);
 
